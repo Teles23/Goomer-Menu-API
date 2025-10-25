@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Categoria {
+  id        Int       @id @default(autoincrement())
+  nome      String
+  descricao String?
+  criadoEm  DateTime  @default(now())
+  produtos  Produto[]
+}
+
+model Produto {
+  id          Int        @id @default(autoincrement())
+  nome        String
+  preco       Float
+  categoriaId Int
+  disponivel  Boolean    @default(true)
+  criadoEm    DateTime   @default(now())
+  promocoes   Promocao[]
+  categoria   Categoria  @relation(fields: [categoriaId], references: [id])
+}
+
+model Promocao {
+  id        Int               @id @default(autoincrement())
+  descricao String?
+  desconto  Float
+  produtoId Int
+  criadoEm  DateTime          @default(now())
+  produto   Produto           @relation(fields: [produtoId], references: [id])
+  horarios  HorarioPromocao[]
+}
+
+model HorarioPromocao {
+  id         Int       @id @default(autoincrement())
+  diaSemana  DiaSemana
+  horaInicio String
+  horaFim    String
+  promocaoId Int
+  promocao   Promocao  @relation(fields: [promocaoId], references: [id])
+
+  @@unique([promocaoId, diaSemana, horaInicio, horaFim])
+}
+
+enum DiaSemana {
+  DOMINGO
+  SEGUNDA
+  TERCA
+  QUARTA
+  QUINTA
+  SEXTA
+  SABADO
+}
