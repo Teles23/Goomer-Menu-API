@@ -25,11 +25,11 @@ model Categoria {
 model Produto {
   id          Int        @id @default(autoincrement())
   nome        String
-  preco       Float
+  preco       Decimal    @db.Decimal(10, 2)
   categoriaId Int
   disponivel  Boolean    @default(true)
   criadoEm    DateTime   @default(now())
-  promocoes   Promocao[]
+  promocoes   Promocao[] @relation("ProdutoPromocao")
   categoria   Categoria  @relation(fields: [categoriaId], references: [id])
 }
 
@@ -39,8 +39,8 @@ model Promocao {
   desconto  Float
   produtoId Int
   criadoEm  DateTime          @default(now())
-  produto   Produto           @relation(fields: [produtoId], references: [id])
-  horarios  HorarioPromocao[]
+  produto   Produto           @relation("ProdutoPromocao", fields: [produtoId], references: [id], onDelete: Cascade)
+  horarios  HorarioPromocao[] @relation("PromocaoHorarios")
 }
 
 model HorarioPromocao {
@@ -49,7 +49,7 @@ model HorarioPromocao {
   horaInicio String
   horaFim    String
   promocaoId Int
-  promocao   Promocao  @relation(fields: [promocaoId], references: [id])
+  promocao   Promocao  @relation("PromocaoHorarios", fields: [promocaoId], references: [id], onDelete: Cascade)
 
   @@unique([promocaoId, diaSemana, horaInicio, horaFim])
 }
