@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import getMenuWithPromotions from "../../services/menu.service.js";
-import formatarCardapio from "../../utils/cardapio.js";
+import formatarCardapio from "../../utils/cardapio.util.js";
 
 async function getMenu(_: Request, res: Response) {
   try {
