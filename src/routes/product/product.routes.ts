@@ -27,7 +27,7 @@ productRouter.put(
 );
 productRouter.delete(
   "/:id",
-  validate(updateProductSchema, "params"),
+  validate(idParamSchema, "params"),
   ProductController.deleteProduct
 );
 
