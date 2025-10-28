@@ -10,9 +10,10 @@ interface Product {
 // Criar um novo produto
 async function create(product: Omit<Product, "id" | "criadoEm">) {
   const { nome, preco, categoriaId, disponivel } = product;
+  const disponivelFinal = disponivel ?? true;
   const result = await pool.query(
     'INSERT INTO "Produto" (nome, preco, "categoriaId", disponivel) VALUES ($1, $2, $3, $4) RETURNING *',
-    [nome, preco, categoriaId, disponivel]
+    [nome, preco, categoriaId, disponivelFinal]
   );
   return result.rows[0];
 }
