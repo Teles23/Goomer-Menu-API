@@ -1,0 +1,32 @@
+services:
+  database:
+    image: postgres:15
+    container_name: goomer_db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT:-5435}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: goomer_api
+    env_file:
+      - .env
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@database:5432/${DB_NAME}"
+      PORT: ${PORT}
+    ports:
+      - "${PORT:-3002}:3000"
+    depends_on:
+      - database
+
+volumes:
+  postgres_data:
