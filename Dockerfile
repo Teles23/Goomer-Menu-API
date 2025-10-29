@@ -16,9 +16,10 @@ WORKDIR /app
 COPY --from=build /app/dist ./dist
 COPY package*.json ./
 COPY prisma ./prisma
+COPY start.sh ./start.sh
 
-RUN npm install --omit=dev
+RUN chmod +x start.sh && npm install --omit=dev
 
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+CMD ["./start.sh"]
