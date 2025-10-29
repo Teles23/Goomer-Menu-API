@@ -76,7 +76,7 @@ async function list() {
     const id: number = row.id;
     if (!map.has(id)) {
       const precoOriginal = parseFloat(row.preco_produto || 0);
-      const precoPromocional = precoOriginal * (row.desconto / 100);
+      const precoPromocional = precoOriginal * (1 - row.desconto / 100);
 
       map.set(id, {
         id,
