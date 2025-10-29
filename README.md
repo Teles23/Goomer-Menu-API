@@ -1,17 +1,19 @@
 # 🍽️ Goomer Menu API
 
-API REST desenvolvida em **Node.js + TypeScript** para gerenciamento de **produtos**, **promoções** e **cardápio** de um restaurante.  
-Projeto desenvolvido como parte do **Desafio Técnico - Pessoa Desenvolvedora Back-end** da Goomer.
+API REST desenvolvida em **Node.js + TypeScript** para gerenciamento de **categorias**, **produtos**, **promoções** e **cardápio** de restaurantes.  
+Desenvolvido como parte do **Desafio Técnico - Pessoa Desenvolvedora Back-end** da Goomer.
 
 ---
 
-## 🧩 Objetivo
+## 🧩 Objetivo do Projeto
 
-Criar uma API capaz de:
-- ✅ Gerenciar produtos e suas promoções
-- 🍔 Retornar o cardápio consolidado com promoções ativas
-- 🕒 Aplicar promoções apenas nos dias e horários definidos
-- 👁️ Controlar a visibilidade dos produtos no cardápio
+O objetivo da **Goomer Menu API** é disponibilizar endpoints para o gerenciamento completo do cardápio digital de um restaurante, permitindo:
+
+- ✅ Criação e listagem de categorias, produtos e promoções;  
+- 🍔 Consolidação automática do cardápio com promoções ativas;  
+- ⏰ Aplicação de descontos condicionados por dia da semana e horário;  
+- 👁️ Controle da disponibilidade dos produtos;  
+- 🧾 Retorno formatado com preço original e promocional.  
 
 ---
 
@@ -19,124 +21,161 @@ Criar uma API capaz de:
 
 | Tecnologia | Descrição |
 |-------------|------------|
-| **Node.js** | Runtime JavaScript utilizado no servidor |
-| **TypeScript** | Tipagem estática para maior segurança e manutenção |
-| **Express** | Framework leve para criação da API REST |
-| **PostgreSQL** | Banco de dados relacional utilizado |
-| **Prisma ORM** | Gerenciamento de migrations e schema do banco |
-| **SQL Puro** | Todas as consultas de leitura são implementadas diretamente em SQL |
-| **Cors / Dotenv** | Configuração de ambiente e segurança de requisições |
+| **Node.js** | Ambiente de execução JavaScript |
+| **TypeScript** | Tipagem estática e segurança no desenvolvimento |
+| **Express** | Framework web leve para criação da API |
+| **PostgreSQL** | Banco de dados relacional |
+| **Prisma ORM** | Gerenciamento de schema e migrations |
+| **SQL Puro** | Consultas de leitura otimizadas |
+| **Docker / Compose** | Containerização e automação de ambientes |
+| **Joi** | Validação de dados de entrada |
+| **Dotenv** | Gerenciamento de variáveis de ambiente |
 
 ---
 
-## 📁 Estrutura de Pastas
+## 🏗️ Fluxo de Uso da API
+
+O fluxo recomendado para uso da API é:
 
 ```
-src/
-├── controllers/        # Camada de controle (requisições HTTP)
-├── database/           # Conexão com o banco de dados
-├── errors/             # Tratamento de erros personalizados
-├── middlewares/        # Middlewares de validação e autenticação
-├── routes/             # Definição das rotas da API
-│   ├── menu/
-│   ├── product/
-│   └── promotion/
-├── schemas/            # Schemas de validação (ex.: Zod)
-├── server/             # Configuração e inicialização do servidor Express
-├── services/           # Camada de regra de negócio
-├── types/              # Definições de interfaces e tipagens
-└── utils/              # Funções utilitárias (datas, formatação, cálculo)
+1️⃣ Criar uma categoria
+2️⃣ Criar um produto vinculado a uma categoria
+3️⃣ Criar uma promoção associada a um produto
+4️⃣ Visualizar o cardápio consolidado
 ```
 
 ---
 
-## 🚀 Instalação e Execução
+## 🧠 Exemplo de Uso Completo
 
-### 1. Clonar o repositório
+### 🥇 1. Criar uma categoria
 ```bash
-git clone [Projeto](https://github.com/Teles23/Goomer-Menu-API.git)
-cd goomer-menu-api
+curl --location 'http://localhost:3005/api/categories' --header 'Content-Type: application/json' --data '{
+    "nome": "Cervejas"
+}'
 ```
 
-### 2. Instalar dependências
-```bash
-npm install
-```
-
-### 3. Configurar variáveis de ambiente
-Crie um arquivo `.env` baseado em `.env.example` e ajuste conforme seu ambiente local.
-
-Exemplo:
-```
-DATABASE_URL="postgresql://user:password@localhost:5432/goomer"
-PORT=3000
-```
-
-### 4. Executar migrations
-```bash
-npx prisma migrate dev
-```
-
-### 5. Rodar o servidor
-```bash
-npm run dev
-```
-
-A API estará disponível em:
-```
-http://localhost:3000
+**Resposta:**
+```json
+{
+  "id": 3,
+  "nome": "Cervejas",
+  "descricao": null,
+  "criadoEm": "2025-10-28T23:29:21.998Z"
+}
 ```
 
 ---
 
-## 🧠 Endpoints Principais
+### 🥈 2. Criar um produto
+```bash
+curl --location 'http://localhost:3005/api/products' --header 'Content-Type: application/json' --data '{
+    "nome": "Heineken",
+    "preco": "18.00",
+    "categoriaId": 3
+}'
+```
 
-### 🛒 Produtos (`/api/products`)
-- `POST /api/products` — Cria um novo produto  
-- `GET /api/products` — Lista todos os produtos  
-- `PUT /api/products/:id` — Atualiza informações de um produto  
-- `DELETE /api/products/:id` — Remove um produto  
+**Resposta:**
+```json
+{
+  "id": 10,
+  "nome": "Heineken",
+  "preco": "18.00",
+  "categoriaId": 3,
+  "disponivel": true,
+  "criadoEm": "2025-10-28T23:40:14.882Z"
+}
+```
 
 ---
 
-### 🎟️ Promoções (`/api/promotions`)
-- `POST /api/promotions` — Cria uma nova promoção  
-- `GET /api/promotions` — Lista promoções existentes  
-- `PUT /api/promotions/:id` — Atualiza promoção existente  
-- `DELETE /api/promotions/:id` — Remove uma promoção  
+### 🥉 3. Criar uma promoção
+```bash
+curl --location 'http://localhost:3005/api/promotions' --header 'Content-Type: application/json' --data '{
+  "descricao": "Chope dobrado",
+  "desconto": 50,
+  "produtoId": 10,
+  "horarios": [
+    {
+      "diaSemana": "SEXTA",
+      "horaInicio": "18:00",
+      "horaFim": "20:00"
+    }
+  ]
+}'
+```
+
+**Resposta:**
+```json
+{
+  "id": 15,
+  "descricao": "Chope dobrado",
+  "desconto": 50,
+  "produtoId": 10,
+  "horarios": [
+    {
+      "diaSemana": "SEXTA",
+      "horaInicio": "18:00",
+      "horaFim": "20:00"
+    }
+  ],
+  "precoOriginal": "R$ 10,00",
+  "precoPromocional": "R$ 5,00"
+}
+```
 
 ---
 
-### 📋 Cardápio (`/api/menu`)
-- `GET /api/menu` — Retorna o cardápio completo, consolidando:
-  - Categorias  
-  - Produtos disponíveis  
-  - Promoções ativas com base no dia e horário atual  
-  - Preço original e promocional quando aplicável  
+### 🧾 4. Visualizar o cardápio consolidado
+```bash
+curl --location 'http://localhost:3005/api/menu'
+```
 
-Exemplo de resposta:
+**Resposta:**
 ```json
 [
   {
     "id": 1,
-    "nome": "Lanches",
-    "descricao": "Sanduíches e combos",
+    "nome": "Fast Food",
     "produtos": [
       {
-        "id": 12,
-        "nome": "X-Burger",
-        "preco": 18.90,
+        "id": 3,
+        "nome": "Pizza",
+        "preco": "R$ 65,99",
         "disponivel": true,
         "promocaoAtiva": {
-          "descricao": "Happy Hour 10%",
-          "desconto": 10,
-          "precoPromocional": 17.01,
+          "id": 13,
+          "descricao": "Pizza dobrada",
+          "desconto": 50,
+          "precoPromocional": "R$ 32,99",
           "horario": {
-            "diaSemana": "sexta-feira",
-            "horaInicio": "18:00",
-            "horaFim": "22:00"
+            "diaSemana": "TERCA",
+            "horaInicio": "10:00",
+            "horaFim": "23:59"
           }
         }
+      },
+      {
+        "id": 5,
+        "nome": "Chope Brahma",
+        "preco": "R$ 10,00",
+        "disponivel": true,
+        "promocaoAtiva": null
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "nome": "Cervejas",
+    "descricao": null,
+    "produtos": [
+      {
+        "id": 9,
+        "nome": "Heineken",
+        "preco": "R$ 18,00",
+        "disponivel": true,
+        "promocaoAtiva": null
       }
     ]
   }
@@ -145,54 +184,46 @@ Exemplo de resposta:
 
 ---
 
-## 🧪 Testes e Validação
+## ⚙️ Outras Rotas Importantes
 
-- Todas as entradas são validadas por **schemas** (Joi)
-- Erros de validação retornam status **400 Bad Request**
-- Erros de servidor retornam status **500 Internal Server Error**
-- O middleware `validated.ts` garante a integridade dos dados recebidos
-
----
-
-## 🧰 Scripts NPM
-
-| Comando | Descrição |
-|----------|------------|
-| `npm run dev` | Executa o servidor em modo desenvolvimento |
-| `npm run build` | Compila o código TypeScript para JavaScript |
-| `npx prisma studio` | Abre o painel gráfico do Prisma |
-
----
-
-## 📚 Funcionalidades Técnicas Implementadas
-
-- Estrutura modular e escalável (controllers, services, utils)
-- Consultas SQL otimizadas e parametrizadas
-- Aplicação de promoções condicionais por horário/dia
-- Retorno de cardápio consolidado e formatado
-- Tratamento de erros padronizado
-- Código tipado e validado com TypeScript
-- Separação clara de camadas (Controller → Service → Database)
-
----
-
-## 📖 Exemplo de Arquitetura
-
+### 🧩 Atualizar um produto
+```bash
+curl --location --request PUT 'http://localhost:3005/api/products/10' --header 'Content-Type: application/json' --data '{
+    "nome": "Heineken 600ml",
+    "preco": "22.00"
+}'
 ```
-[Client]
-   ↓
-[Controller] → recebe e valida requisições
-   ↓
-[Service] → executa regra de negócio e consultas SQL
-   ↓
-[Database] → retorna dados do PostgreSQL
-   ↓
-[Controller] → responde com JSON formatado
+
+### ❌ Excluir um produto
+```bash
+curl --location --request DELETE 'http://localhost:3005/api/products/10'
+```
+
+### 🧾 Atualizar uma promoção
+```bash
+curl --location --request PUT 'http://localhost:3005/api/promotions/15' --header 'Content-Type: application/json' --data '{
+    "descricao": "Chope dobrado happy hour",
+    "desconto": 50
+}'
+```
+
+### ❌ Excluir uma promoção
+```bash
+curl --location --request DELETE 'http://localhost:3005/api/promotions/15'
 ```
 
 ---
 
-## 🪶 Licença
+## 🧰 Observações
 
-Este projeto é distribuído sob a licença **MIT**.  
-Sinta-se livre para usar, estudar e contribuir.
+- O fluxo da API deve **sempre respeitar a hierarquia**: Categoria → Produto → Promoção → Menu.  
+- As promoções só são aplicadas quando o dia e o horário atuais estão dentro do intervalo cadastrado.  
+- Os endpoints retornam respostas padronizadas com `status code` apropriado.  
+- Erros são tratados e retornados com mensagens descritivas.
+
+---
+
+## 🧠 Autor
+
+**Thiago Teles**  
+Analista de Requisitos / Desenvolvedor Back-end  
